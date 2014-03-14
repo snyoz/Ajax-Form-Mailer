@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ajax Formmailer</title>
+    <link rel="stylesheet" href="css/main.css" type="text/css" />
+  </head>
+
+  <!-- EXAMPLE STYLESHEETS -->
+
+  <style>
+    #contact_form{ width:300px; padding:20px; border: 1px solid #DDD;border-radius: 5px; font-family: Arial; font-size: 11px; font-weight: bold;color: #666666; background:#FAFAFA; margin-right: auto; margin-left: auto;}
+    #contact_form legend{font-size: 15px; color: #C9C9C9;}
+    #contact_form label{display: block; margin-bottom:5px;}
+    #contact_form label span{float:left; width:100px; color:#666666;}
+    #contact_form input{height: 25px; border: 1px solid #DBDBDB; border-radius: 3px; padding-left: 4px; color: #666; width: 180px; font-family: Arial, Helvetica, sans-serif;}
+    #contact_form textarea{border: 1px solid #DBDBDB; border-radius: 3px; padding-left: 4px;color: #666; height:100px; width: 180px; font-family: Arial, Helvetica, sans-serif;}
+    .submit_btn { border: 1px solid #D8D8D8; padding: 5px 15px 5px 15px; color: #8D8D8D; text-shadow: 1px 1px 1px #FFF; border-radius: 3px; background: #F8F8F8;}
+    .submit_btn:hover { background: #ECECEC;}
+    .success{ background: #CFFFF5;padding: 10px; margin-bottom: 10px; border: 1px solid #B9ECCE; border-radius: 5px; font-weight: normal; }
+    .error{ background: #FFDFDF; padding: 10px; margin-bottom: 10px; border: 1px solid #FFCACA; border-radius: 5px; font-weight: normal;}
+  </style>
+  <body>
+
+    <!-- MARKUP-STARTS HERE -->
+
+    <fieldset id="contact_form">
+    <legend>My Contact Form</legend>
+    <div id="result"></div>
+        <label for="name"><span>Name</span>
+        <input type="text" name="name" id="name" placeholder="Enter Your Name" />
+        </label>
+        
+        <label for="email"><span>Email Address</span>
+        <input type="text" name="email" id="email" placeholder="Enter Your Email" />
+        </label>
+        
+        <label for="phone"><span>Phone</span>
+        <input type="text" name="phone" id="phone" placeholder="Phone Number" />
+        </label>
+        
+        <label for="message"><span>Message</span>
+        <textarea name="message" id="message" placeholder="Enter Your Name"></textarea>
+        </label>
+        
+        <label><span>&nbsp;</span>
+        <button class="submit_btn" id="submit_btn">Submit</button>
+        </label>
+    </fieldset>
+
+    <!-- DON'T FORGET TO USE JQUERY -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    
+    <!-- JQUERY CODE STARTS HERE -->
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $("#submit_btn").click(function() { 
+            //collect input field values
+            var user_name       = $('input[name=name]').val(); 
+            var user_email      = $('input[name=email]').val();
+            var user_phone      = $('input[name=phone]').val();
+            var user_message    = $('textarea[name=message]').val();
+            
+            //simple validation at client's end
+            //we simply change border color to red if empty field using .css()
+            var proceed = true;
+            if(user_name==""){ 
+                $('input[name=name]').css('border-color','red'); 
+                proceed = false;
+            }
+            if(user_email==""){ 
+                $('input[name=email]').css('border-color','red'); 
+                proceed = false;
+            }
+            if(user_phone=="") {    
+                $('input[name=phone]').css('border-color','red'); 
+                proceed = false;
+            }
+            if(user_message=="") {  
+                $('textarea[name=message]').css('border-color','red'); 
+                proceed = false;
+            }
+            
+            //everything looks good! proceed...
+            if(proceed) 
+            {
+                //data to be sent to server
+                post_data = {'userName':user_name, 'userEmail':user_email, 'userPhone':user_phone, 'userMessage':user_message};
+                
+                // HERE YOU HAVE TO CALL YOUR PHP FILE!!!
+
+                //Ajax post data to server
+                $.post('mailserver.php', post_data, function(data){  
+                    
+                    //load success massage in #result div element, with slide effect.       
+                    $("#result").hide().html('<div class="success">'+data+'</div>').slideDown();
+                    
+                    //reset values in all input fields
+                    $('#contact_form input').val(''); 
+                    $('#contact_form textarea').val(''); 
+                    
+                }).fail(function(err) {  //load any error data
+                    $("#result").hide().html('<div class="error">'+err.statusText+'</div>').slideDown();
+                });
+            }
+                    
+        });
+        
+        //reset previously set border colors and hide all message on .keyup()
+        $("#contact_form input, #contact_form textarea").keyup(function() { 
+            $("#contact_form input, #contact_form textarea").css('border-color',''); 
+            $("#result").slideUp();
+        });
+        
+    });
+    </script>
+  </body>
+</html
